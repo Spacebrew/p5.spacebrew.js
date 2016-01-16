@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+    <title>Spacebrew Button (Boolean Example)</title>
+
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" charset="utf-8" />
+    <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+	<script type="text/javascript" src="js/sb-1.4.1.js"></script>
+	<script type="text/javascript" src="js/sb-admin-0.1.4.js"></script>
+	
+    <script type="text/javascript">
+
+		$(window).on("load", setup);
+	      
+		// Spacebrew Object
+		var sb
+			, app_name = "Auto Button Example"
+			;
+
+		/**
+	     * setup Configure spacebrew connection and adds the mousedown listener.
+	     */
+		function setup () {
+			//var random_id = "0000" + Math.floor(Math.random() * 10000);
+
+			app_name = app_name;// + ' ' + random_id.substring(random_id.length-4);
+
+			// create spacebrew client object
+			sb = new Spacebrew.Client({reconnect:true});
+			sb.extend(Spacebrew.Admin);
+
+			// set the base description
+			sb.name(app_name);
+			sb.description("This spacebrew client sends and receives boolean messages buttons.");
+
+			sb.onNewClient = onNewClient;
+
+			// override Spacebrew events - this is how you catch events coming from Spacebrew
+			sb.onOpen = onOpen;
+
+			// connect to spacbrew
+			sb.connect();
+
+			// listen to the mouse 
+			for( var i = 0; i < 5; i++ ) {
+				var el = $("<div/>");
+				var buttid = "butt"+i
+				$(el).addClass("button").text("button " + i).data("butt","butt"+i);
+
+				$(el).click(function(){
+					sb.send($(this).data("butt"), "boolean", "true");
+				}).appendTo($("#buttons"));
+
+				sb.addPublish( "butt"+i, "boolean", "false" );
+			}
+		}	
+
+		function joinTwo( pub, sub ) {
+			console.log("go!");
+			for( var i = 0; i < pub.publish.messages.length; i++ ) {
+				sb.addRoute( pub.name, pub.remoteAddress, pub.publish.messages[i].name, sub.name, sub.remoteAddress, sub.subscribe.messages[i].name);
+			}
+		}
+
+		var pub = null;
+		var sub = null;
+		var bJoined = false;
+		function onNewClient( client ) {
+			
+			if( client.name == "p5 sound player " ) {
+				sub = client;
+			} else if( client.name == "Auto Button Example" ) {
+				pub = client;
+			}
+
+			if( pub != null && sub != null && !bJoined ) {
+				bJoined = true;
+				joinTwo( pub, sub );	
+			}
+		}
+
+		/**
+		 * Function that is called when Spacebrew connection is established
+		 */
+		function onOpen() {
+			var message = "Connected as <strong>" + sb.name() + "</strong>. ";
+			if (sb.name() === app_name) {
+				message += "<br>You can customize this app's name in the query string by adding <strong>name=your_app_name</strong>."
+			}
+			$("#name").html( message );
+
+			//sb.send( "newClient", "string", client.name );
+		}
+	</script>
+	</head>
+
+	<body>
+		<h1>Click to send a message to spacebrew:</h1>
+		
+		<div id="buttons">
+		</div>
+		
+		<div id="name">Trying to connect</div>
+	</body>
+
+</html>
