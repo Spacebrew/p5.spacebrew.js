@@ -170,14 +170,14 @@ var Spacebrew = function () {
 	}
 
 	/**
-	 * Add a listener to the 'onStringMessgae' event
+	 * Add a listener to the 'onStringMessage' event
 	 * @param  {Function} fxn Function following this format: 
 	 *                      function NAME_OF_FUNCTION( name, value ){}
 	 * @return {Spacebrew}
 	 */
-	this.onStringMessgae = function( fxn ){
+	this.onStringMessage = function( fxn ){
 	    var f = function (e) { fxn(e.detail.name, e.detail.value); };
-		document.addEventListener('onStringMessgae', f, false);
+		document.addEventListener('onStringMessage', f, false);
 		return this;
 	}
 
