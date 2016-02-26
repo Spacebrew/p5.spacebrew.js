@@ -365,8 +365,8 @@ var Spacebrew = function () {
 			var onRangeMessageEvent 	= new CustomEvent('onRangeMessage', {detail:{name:m.name, value:m.value}});
 			document.dispatchEvent( onRangeMessageEvent  );
 		} else {
-			var onCustomMessageEvent 	= new CustomEvent('onRangeMessage', {detail:{name:m.name, type:type, value:m.value}});
-			document.dispatchEvent( onRangeMessageEvent  );
+			var onCustomMessageEvent 	= new CustomEvent('onCustomMessage', {detail:{name:m.name, type:type, value:m.value}});
+			document.dispatchEvent( onCustomMessageEvent  );
 		}
 	}
 
